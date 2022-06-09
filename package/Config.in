@@ -2618,8 +2618,9 @@ menu "Text editors and viewers"
 	source "package/vim/Config.in"
 endmenu
 
-menu "myown helloworld"
+menu "Mobiletek-added packages"
     source "package/helloworld/Config.in"
+    source "package/vsomeip/Config.in"
 endmenu
 
 endmenu
