@@ -2618,4 +2618,8 @@ menu "Text editors and viewers"
 	source "package/vim/Config.in"
 endmenu
 
+menu "myown helloworld"
+    source "package/helloworld/Config.in"
+endmenu
+
 endmenu
