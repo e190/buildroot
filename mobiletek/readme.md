@@ -1,6 +1,9 @@
 # 编译
+## config
+    保存配置
+    cp .config configs/asr1803_defconfig
 ## 设置编译器
-    1. make menuconfig
+    1. make menuconfig asr1803_defconfig
 
       Toolchain
       -> Toolchain type = External toolchain
