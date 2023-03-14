@@ -90,6 +90,11 @@ config BR2_TARGET_ROOTFS_UBIFS_XZ
 
 endchoice
 
+config BR2_TARGET_CUSTOM_ROOTFS_DIR_OPTS
+	string "Additional custom directories options"
+	help
+      custom filesystem directories options you may want to include.
+
 config BR2_TARGET_ROOTFS_UBIFS_OPTS
 	string "Additional mkfs.ubifs options"
 	help

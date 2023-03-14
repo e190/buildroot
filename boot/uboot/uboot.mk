@@ -34,6 +34,9 @@ UBOOT_SITE_METHOD = hg
 else ifeq ($(BR2_TARGET_UBOOT_CUSTOM_SVN),y)
 UBOOT_SITE = $(call qstrip,$(BR2_TARGET_UBOOT_CUSTOM_REPO_URL))
 UBOOT_SITE_METHOD = svn
+else ifeq ($(BR2_TARGET_UBOOT_LOCAL_DIRECTORY),y)
+UBOOT_SITE = $(call qstrip,$(BR2_TARGET_UBOOT_CUSTOM_REPO_URL))
+UBOOT_SITE_METHOD = local
 else
 # Handle stable official U-Boot versions
 UBOOT_SITE = https://ftp.denx.de/pub/u-boot
@@ -323,7 +326,7 @@ ifeq ($(BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY),y)
 define UBOOT_CONFIGURE_CMDS
 	$(TARGET_CONFIGURE_OPTS) \
 		$(UBOOT_MAKE) -C $(@D) $(UBOOT_MAKE_OPTS) \
-		$(UBOOT_BOARD_NAME)_config
+		$(UBOOT_BOARD_NAME)
 endef
 else ifeq ($(BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG),y)
 ifeq ($(BR2_TARGET_UBOOT_USE_DEFCONFIG),y)

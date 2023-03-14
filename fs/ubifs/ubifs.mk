@@ -21,10 +21,14 @@ endif
 
 UBIFS_OPTS += $(call qstrip,$(BR2_TARGET_ROOTFS_UBIFS_OPTS))
 
+CUSTOM_DIR += $(call qstrip,$(BR2_TARGET_CUSTOM_ROOTFS_DIR_OPTS))
+
 ROOTFS_UBIFS_DEPENDENCIES = host-mtd
 
 define ROOTFS_UBIFS_CMD
-	$(HOST_DIR)/sbin/mkfs.ubifs -d $(TARGET_DIR) $(UBIFS_OPTS) -o $@
+	$(if $(CUSTOM_DIR),
+		$(HOST_DIR)/sbin/mkfs.ubifs -d $(CUSTOM_DIR) $(UBIFS_OPTS) -o $@,
+	  $(HOST_DIR)/sbin/mkfs.ubifs -d $(TARGET_DIR) $(UBIFS_OPTS) -o $@)
 endef
 
 $(eval $(rootfs))

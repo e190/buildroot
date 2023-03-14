@@ -2743,4 +2743,9 @@ menu "Text editors and viewers"
 	source "package/vim/Config.in"
 endmenu
 
+menu "Mobiletek-added packages"
+    source "package/helloworld/Config.in"
+endmenu
+
+
 endmenu
