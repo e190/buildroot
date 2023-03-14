@@ -44,8 +44,7 @@ II. User guide
         8.10. Graphing the build duration
         8.11. Graphing the filesystem size contribution of packages
         8.12. Top-level parallel build
-        8.13. Integration with Eclipse
-        8.14. Advanced usage
+        8.13. Advanced usage
 
     9. Project-specific customization
 
@@ -61,10 +60,10 @@ II. User guide
         9.10. Quick guide to storing your project-specific
             customizations
 
-    10. Using SELinux in Buildroot
+    10. Integration topics
 
-        10.1. Enabling SELinux support
-        10.2. SELinux policy tweaking
+        10.1. Systemd
+        10.2. Using SELinux in Buildroot
 
     11. Frequently Asked Questions & Troubleshooting
 
@@ -161,6 +160,9 @@ IV. Appendix
 
     25. Makedev syntax documentation
     26. Makeusers syntax documentation
+
+        26.1. Caveat with automatic UIDs and GIDs
+
     27. Migrating from older Buildroot versions
 
         27.1. General approach
@@ -177,16 +179,16 @@ List of Examples
 
 ---------------------------------------------------------------------
 
-Buildroot 2022.02.2 manual generated on 2022-05-29 19:34:55 UTC from
-git revision 1335d46be5
+Buildroot 2023.02 manual generated on 2023-03-12 20:24:23 UTC from
+git revision 8cca1e6de1
 
 The Buildroot manual is written by the Buildroot developers. It is
 licensed under the GNU General Public License, version 2. Refer to
 the COPYING [http://git.buildroot.org/buildroot/tree/COPYING?id=
-1335d46be5eaf1adc313ab398273724b0693309b] file in the Buildroot
+8cca1e6de1c69a0a5e876116906bb3f6da4a5bd5] file in the Buildroot
 sources for the full text of this license.
 
-Copyright © 2004-2020 The Buildroot developers
+Copyright © The Buildroot developers <>
 
 Part I. Getting started
 
@@ -251,6 +253,7 @@ vary between distributions).
       + make (version 3.81 or any later)
       + binutils
       + build-essential (only for Debian based systems)
+      + diffutils
       + gcc (version 4.8 or any later)
       + g++ (version 4.8 or any later)
       + bash
@@ -264,6 +267,7 @@ vary between distributions).
       + rsync
       + file (must be in /usr/bin/file)
       + bc
+      + findutils
   * Source fetching tools:
 
       + wget
@@ -529,8 +533,8 @@ Patchwork
     concise web interface, it can be useful for all Buildroot
     developers.
 
-    The Buildroot patch management interface is available at http://
-    patchwork.buildroot.org.
+    The Buildroot patch management interface is available at https://
+    patchwork.ozlabs.org/project/buildroot/list/.
 
 Part II. User guide
 
@@ -557,8 +561,7 @@ Table of Contents
     8.10. Graphing the build duration
     8.11. Graphing the filesystem size contribution of packages
     8.12. Top-level parallel build
-    8.13. Integration with Eclipse
-    8.14. Advanced usage
+    8.13. Advanced usage
 
 9. Project-specific customization
 
@@ -573,10 +576,10 @@ Table of Contents
     9.9. Adding project-specific packages
     9.10. Quick guide to storing your project-specific customizations
 
-10. Using SELinux in Buildroot
+10. Integration topics
 
-    10.1. Enabling SELinux support
-    10.2. SELinux policy tweaking
+    10.1. Systemd
+    10.2. Using SELinux in Buildroot
 
 11. Frequently Asked Questions & Troubleshooting
 
@@ -1121,7 +1124,7 @@ well as the configuration:
 
 Notes. If ccache is enabled, running make clean or distclean does not
 empty the compiler cache used by Buildroot. To delete it, refer to
-Section 8.14.3, “Using ccache in Buildroot”.
+Section 8.13.3, “Using ccache in Buildroot”.
 
 Dumping the internal make variables: One can dump the variables known
 to make, along with their values:
@@ -1294,7 +1297,7 @@ above simply manipulate these stamp files to force Buildroot to
 restart a specific set of steps of a package build process.
 
 Further details about package special make targets are explained in
-Section 8.14.5, “Package-specific make targets”.
+Section 8.13.5, “Package-specific make targets”.
 
 8.4. Offline builds
 
@@ -1316,11 +1319,11 @@ Buildroot also supports building out of tree with a syntax similar to
 the Linux kernel. To use it, add O=<directory> to the make command
 line:
 
- $ make O=/tmp/build
+ $ make O=/tmp/build menuconfig
 
 Or:
 
- $ cd /tmp/build; make O=$PWD -C path/to/buildroot
+ $ cd /tmp/build; make O=$PWD -C path/to/buildroot menuconfig
 
 All the output files will be located under /tmp/build. If the O path
 does not exist, Buildroot will create it.
@@ -1364,7 +1367,7 @@ passed to make or set in the environment:
   * BR2_DL_DIR to override the directory in which Buildroot stores/
     retrieves downloaded files. Note that the Buildroot download
     directory can also be set from the configuration interface, so
-    through the Buildroot .config file. See Section 8.14.4, “Location
+    through the Buildroot .config file. See Section 8.13.4, “Location
     of downloaded packages” for more details on how you can set the
     download directory.
   * BR2_GRAPH_ALT, if set and non-empty, to use an alternate
@@ -1649,37 +1652,9 @@ effects:
     will be empty and it’s only at the very end of the build that
     they will be populated.
 
-8.13. Integration with Eclipse
+8.13. Advanced usage
 
-While a part of the embedded Linux developers like classical text
-editors like Vim or Emacs, and command-line based interfaces, a
-number of other embedded Linux developers like richer graphical
-interfaces to do their development work. Eclipse being one of the
-most popular Integrated Development Environment, Buildroot integrates
-with Eclipse in order to ease the development work of Eclipse users.
-
-Our integration with Eclipse simplifies the compilation, remote
-execution and remote debugging of applications and libraries that are
-built on top of a Buildroot system. It does not integrate the
-Buildroot configuration and build processes themselves with Eclipse.
-Therefore, the typical usage model of our Eclipse integration would
-be:
-
-  * Configure your Buildroot system with make menuconfig, make
-    xconfig or any other configuration interface provided with
-    Buildroot.
-  * Build your Buildroot system by running make.
-  * Start Eclipse to develop, execute and debug your own custom
-    applications and libraries, that will rely on the libraries built
-    and installed by Buildroot.
-
-The Buildroot Eclipse integration installation process and usage is
-described in detail at https://github.com/mbats/
-eclipse-buildroot-bundle/wiki.
-
-8.14. Advanced usage
-
-8.14.1. Using the generated toolchain outside Buildroot
+8.13.1. Using the generated toolchain outside Buildroot
 
 You may want to compile, for your target, your own programs or other
 software that are not packaged in Buildroot. In order to do this you
@@ -1724,7 +1699,7 @@ provides some useful commands. Note however that once this script is
 sourced, the environment is setup only for cross-compilation, and no
 longer for native compilation.
 
-8.14.2. Using gdb in Buildroot
+8.13.2. Using gdb in Buildroot
 
 Buildroot allows to do cross-debugging, where the debugger runs on
 the build machine and communicates with gdbserver on the target to
@@ -1769,7 +1744,7 @@ Finally, to connect to the target from the cross gdb:
 
 (gdb) target remote <target ip address>:2345
 
-8.14.3. Using ccache in Buildroot
+8.13.3. Using ccache in Buildroot
 
 ccache [http://ccache.samba.org] is a compiler cache. It stores the
 object files resulting from each compilation process, and is able to
@@ -1782,10 +1757,11 @@ ccache support is integrated in Buildroot. You just have to enable
 Enable compiler cache in Build options. This will automatically build
 ccache and use it for every host and target compilation.
 
-The cache is located in $HOME/.buildroot-ccache. It is stored outside
-of Buildroot output directory so that it can be shared by separate
-Buildroot builds. If you want to get rid of the cache, simply remove
-this directory.
+The cache is located in the directory defined by the BR2_CCACHE_DIR
+configuration option, which defaults to $HOME/.buildroot-ccache. This
+default location is outside of Buildroot output directory so that it
+can be shared by separate Buildroot builds. If you want to get rid of
+the cache, simply remove this directory.
 
 You can get statistics on the cache (its size, number of hits,
 misses, etc.) by running make ccache-stats.
@@ -1820,7 +1796,18 @@ directories" [https://ccache.samba.org/manual.html#
 _compiling_in_different_directories] for more details about this
 rewriting of absolute paths.
 
-8.14.4. Location of downloaded packages
+When ccache is enabled in Buildroot using the BR2_CCACHE=y option:
+
+  * ccache is used during the Buildroot build itself
+  * ccache is not used when building outside of Buildroot, for
+    example when directly calling the cross-compiler or using the SDK
+
+One can override this behavior using the BR2_USE_CCACHE environment
+variable: when set to 1, usage of ccache is enabled (default during
+the Buildroot build), when unset or set to a value different from 1,
+usage of ccache is disabled.
+
+8.13.4. Location of downloaded packages
 
 The various tarballs that are downloaded by Buildroot are all stored
 in BR2_DL_DIR, which by default is the dl directory. If you want to
@@ -1841,7 +1828,7 @@ The download location can also be set in the .config file, with the
 BR2_DL_DIR option. Unlike most options in the .config file, this
 value is overridden by the BR2_DL_DIR environment variable.
 
-8.14.5. Package-specific make targets
+8.13.5. Package-specific make targets
 
 Running make <package> builds and installs that particular package
 and its dependencies.
@@ -1939,7 +1926,7 @@ Additionally, there are some other useful make targets:
 |                       |the build directory                 |
 +------------------------------------------------------------+
 
-8.14.6. Using Buildroot during development
+8.13.6. Using Buildroot during development
 
 The normal operation of Buildroot is to download a tarball, extract
 it, configure, compile and install the software component found
@@ -2111,10 +2098,10 @@ choice is up to you.
 |           +-- post_image.sh
 |           +-- rootfs_overlay/
 |           |   +-- etc/
-|           |   +-- <some file>
+|           |   +-- <some files>
 |           +-- patches/
 |               +-- foo/
-|               |   +-- <some patch>
+|               |   +-- <some patches>
 |               +-- libbar/
 |                   +-- <some other patches>
 |
@@ -2625,8 +2612,8 @@ itself, or call make with make savedefconfig BR2_DEFCONFIG=
 
 The recommended place to store this defconfig is configs/<boardname>
 _defconfig. If you follow this recommendation, the configuration will
-be listed in make help and can be set again by running make
-<boardname>_defconfig.
+be listed in make list-defconfigs and can be set again by running
+make <boardname>_defconfig.
 
 Alternatively, you can copy the file to any other place and rebuild
 with make defconfig BR2_DEFCONFIG=<path-to-defconfig-file>.
@@ -3081,7 +3068,39 @@ are not relevant to your project can be skipped.
 13. make savedefconfig to save the buildroot configuration.
 14. cp defconfig configs/<boardname>_defconfig
 
-Chapter 10. Using SELinux in Buildroot
+Chapter 10. Integration topics
+
+This chapter discusses how various things are integrated at system
+level. Buildroot is highly configurable, almost everything discussed
+here can be changed or overridden by rootfs overlay or custom
+skeleton configuration.
+
+10.1. Systemd
+
+This chapter describes the decisions taken in Buildroot’s integration
+of systemd, and how various use cases can be implemented.
+
+10.1.1. DBus daemon
+
+Systemd requires a DBus daemon. There are two options for it:
+traditional dbus (BR2_PACKAGE_DBUS) and bus1 dbus-broker
+(BR2_PACKAGE_DBUS_BROKER). At least one of them must be chosen. If
+both are included in the configuration, dbus-broker will be used as
+system bus, but the traditional dbus-daemon is still installed as
+well and can be used as session bus. Also its tools (e.g. dbus-send)
+can be used (systemd itself has busctl as an alternative). In
+addition, the traditional dbus package is the only one that provides
+libdbus, which is used by many packages as dbus integration library.
+
+Both in the dbus and in the dbus-broker case, the daemon runs as user
+dbus. The DBus configuration files are also identical for both.
+
+To make sure that only one of the two daemons is started as system
+bus, the systemd activation files of the dbus package (dbus.socket
+and the dbus.service symlink in multi-user.target.wants) are removed
+when dbus-broker is selected.
+
+10.2. Using SELinux in Buildroot
 
 SELinux [https://selinuxproject.org] is a Linux kernel security
 module enforcing access control policies. In addition to the
@@ -3108,7 +3127,7 @@ By default in Buildroot the SELinux policy is provided by the
 upstream refpolicy [https://github.com/SELinuxProject/refpolicy]
 project, enabled with BR2_PACKAGE_REFPOLICY.
 
-10.1. Enabling SELinux support
+10.2.1. Enabling SELinux support
 
 To have proper support for SELinux in a Buildroot generated system,
 the following configuration options must be enabled:
@@ -3119,7 +3138,7 @@ the following configuration options must be enabled:
 In addition, your filesystem image format must support extended
 attributes.
 
-10.2. SELinux policy tweaking
+10.2.2. SELinux policy tweaking
 
 The SELinux refpolicy contains modules that can be enabled or
 disabled when being built. Each module provide a number of SELinux
@@ -3362,7 +3381,7 @@ help reduce the build time:
     not prevent you to switch back to an internal toolchain (that may
     provide a higher level of customization) once the rest of your
     system is working;
-  * Use the ccache compiler cache (see: Section 8.14.3, “Using ccache
+  * Use the ccache compiler cache (see: Section 8.13.3, “Using ccache
     in Buildroot”);
   * Learn about rebuilding only the few packages you actually care
     about (see Section 8.3, “Understanding how to rebuild packages”),
@@ -3387,8 +3406,8 @@ Chapter 12. Known issues
     BR2_TARGET_LDFLAGS if such options contain a $ sign. For example,
     the following is known to break: BR2_TARGET_LDFLAGS="-Wl,-rpath=
     '$ORIGIN/../lib'"
-  * The libffi package is not supported on the SuperH 2, nds32, and
-    ARMv7-M architectures.
+  * The libffi package is not supported on the SuperH 2 and ARMv7-M
+    architectures.
   * The prboom package triggers a compiler failure with the SuperH 4
     compiler from Sourcery CodeBench, version 2012.09.
 
@@ -3855,6 +3874,17 @@ image sdimage.img {
     notations above then use hexadecimal 0x prefix or, as last
     chance, the byte count. In comments instead use GB, MB, KB (not
     kb) in place of G, M, K.
+  * For GPT partitions, the partition-type-uuid value must be U for
+    the EFI System Partition (expanded to
+    c12a7328-f81f-11d2-ba4b-00a0c93ec93b by genimage), F for a FAT
+    partition (expanded to ebd0a0a2-b9e5-4433-87c0-68b6b72699c7 by 
+    genimage) or L for the root filesystem or other filesystems
+    (expanded to 0fc63daf-8483-4772-8e79-3d69d8477de4 by genimage).
+    Even though L is the default value of genimage, we prefer to have
+    it explicitly specified in our genimage.cfg files. Finally, these
+    shortcuts should be used without double quotes, e.g
+    partition-type-uuid = U. If an explicit GUID is specified,
+    lower-case letters should be used.
 
 The genimage.cfg files are the input for the genimage tool used in
 Buildroot to generate the final image file(i.e. sdcard.img). For
@@ -4333,8 +4363,8 @@ different way, using different infrastructures:
     infrastructure must be used for new packages that rely on CMake.
     We cover them through a tutorial and reference.
   * Makefiles for Python modules: We have a dedicated infrastructure
-    for Python modules that use either the distutils or the
-    setuptools mechanism. We cover them through a tutorial and a
+    for Python modules that use the distutils, flit, pep517 or
+    setuptools mechanisms. We cover them through a tutorial and a
     reference.
   * Makefiles for Lua modules: We have a dedicated infrastructure for
     Lua modules available through the LuaRocks web site. We cover
@@ -5450,8 +5480,9 @@ still possible to customize what is done in any particular step:
 18.9. Infrastructure for Python packages
 
 This infrastructure applies to Python packages that use the standard
-Python setuptools mechanism as their build system, generally
-recognizable by the usage of a setup.py script.
+Python setuptools or pep517 mechanisms as their build system,
+generally recognizable by the usage of a setup.py script or
+pyproject.toml file.
 
 18.9.1. python-package tutorial
 
@@ -5492,8 +5523,8 @@ On line 13, we declare our dependencies, so that they are built
 before the build process of our package starts.
 
 On line 14, we declare the specific Python build system being used.
-In this case the distutils Python build system is used. The two
-supported ones are distutils and setuptools.
+In this case the distutils Python build system is used. The four
+supported ones are distutils, flit, pep517 and setuptools.
 
 Finally, on line 16, we invoke the python-package macro that
 generates all the Makefile rules that actually allow the package to
@@ -5535,11 +5566,14 @@ Note that:
 One variable specific to the Python infrastructure is mandatory:
 
   * PYTHON_FOO_SETUP_TYPE, to define which Python build system is
-    used by the package. The two supported values are distutils and
-    setuptools. If you don’t know which one is used in your package,
-    look at the setup.py file in your package source code, and see
-    whether it imports things from the distutils module or the
-    setuptools module.
+    used by the package. The four supported values are distutils,
+    flit, pep517 and setuptools. If you don’t know which one is used
+    in your package, look at the setup.py or pyproject.toml file in
+    your package source code, and see whether it imports things from
+    the distutils, flit module or the setuptools module. If the
+    package is using a pyproject.toml file without any build-system
+    requires and with a local in-tree backend-path one should use
+    pep517.
 
 A few additional variables, specific to the Python infrastructure,
 can optionally be defined, depending on the package’s needs. Many of
@@ -5547,35 +5581,47 @@ them are only useful in very specific cases, typical packages will
 therefore only use a few of them, or none.
 
   * PYTHON_FOO_SUBDIR may contain the name of a subdirectory inside
-    the package that contains the main setup.py file. This is useful,
-    if for example, the main setup.py file is not at the root of the
-    tree extracted by the tarball. If HOST_PYTHON_FOO_SUBDIR is not
-    specified, it defaults to PYTHON_FOO_SUBDIR.
+    the package that contains the main setup.py or pyproject.toml
+    file. This is useful, if for example, the main setup.py or
+    pyproject.toml file is not at the root of the tree extracted by
+    the tarball. If HOST_PYTHON_FOO_SUBDIR is not specified, it
+    defaults to PYTHON_FOO_SUBDIR.
   * PYTHON_FOO_ENV, to specify additional environment variables to
-    pass to the Python setup.py script (for both the build and
-    install steps). Note that the infrastructure is automatically
-    passing several standard variables, defined in
-    PKG_PYTHON_DISTUTILS_ENV (for distutils target packages),
-    HOST_PKG_PYTHON_DISTUTILS_ENV (for distutils host packages),
-    PKG_PYTHON_SETUPTOOLS_ENV (for setuptools target packages) and
-    HOST_PKG_PYTHON_SETUPTOOLS_ENV (for setuptools host packages).
+    pass to the Python setup.py script (for distutils/setuptools
+    packages) or the support/scripts/pyinstaller.py script (for flit/
+    pep517 packages) for both the build and install steps. Note that
+    the infrastructure is automatically passing several standard
+    variables, defined in PKG_PYTHON_DISTUTILS_ENV (for distutils
+    target packages), HOST_PKG_PYTHON_DISTUTILS_ENV (for distutils
+    host packages), PKG_PYTHON_SETUPTOOLS_ENV (for setuptools target
+    packages), HOST_PKG_PYTHON_SETUPTOOLS_ENV (for setuptools host
+    packages), PKG_PYTHON_PEP517_ENV (for flit/pep517 target
+    packages) and HOST_PKG_PYTHON_PEP517_ENV (for flit/pep517 host
+    packages).
   * PYTHON_FOO_BUILD_OPTS, to specify additional options to pass to
-    the Python setup.py script during the build step. For target
-    distutils packages, the PKG_PYTHON_DISTUTILS_BUILD_OPTS options
-    are already passed automatically by the infrastructure.
+    the Python setup.py script during the build step, this generally
+    only makes sense to use for distutils/setuptools based packages
+    as flit/pep517 based packages do not pass these options to a
+    setup.py script but instead pass them to support/scripts/
+    pyinstaller.py. For target distutils packages, the
+    PKG_PYTHON_DISTUTILS_BUILD_OPTS options are already passed
+    automatically by the infrastructure.
   * PYTHON_FOO_INSTALL_TARGET_OPTS, PYTHON_FOO_INSTALL_STAGING_OPTS,
     HOST_PYTHON_FOO_INSTALL_OPTS to specify additional options to
-    pass to the Python setup.py script during the target installation
-    step, the staging installation step or the host installation,
-    respectively. Note that the infrastructure is automatically
-    passing some options, defined in
-    PKG_PYTHON_DISTUTILS_INSTALL_TARGET_OPTS or
+    pass to the Python setup.py script (for distutils/setuptools
+    packages) or support/scripts/pyinstaller.py (for flit/pep517
+    packages) during the target installation step, the staging
+    installation step or the host installation, respectively. Note
+    that the infrastructure is automatically passing some options,
+    defined in PKG_PYTHON_DISTUTILS_INSTALL_TARGET_OPTS or
     PKG_PYTHON_DISTUTILS_INSTALL_STAGING_OPTS (for target distutils
     packages), HOST_PKG_PYTHON_DISTUTILS_INSTALL_OPTS (for host
     distutils packages), PKG_PYTHON_SETUPTOOLS_INSTALL_TARGET_OPTS or
     PKG_PYTHON_SETUPTOOLS_INSTALL_STAGING_OPTS (for target setuptools
-    packages) and HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS (for host
-    setuptools packages).
+    packages), HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS (for host
+    setuptools packages) and PKG_PYTHON_PEP517_INSTALL_TARGET_OPTS or
+    PKG_PYTHON_PEP517_INSTALL_STAGING_OPTS (for target flit/pep517
+    packages).
 
 With the Python infrastructure, all the steps required to build and
 install the packages are already defined, and they generally work
@@ -7105,6 +7151,7 @@ The following hook points are available:
   * LIBFOO_POST_INSTALL_IMAGES_HOOKS
   * LIBFOO_PRE_LEGAL_INFO_HOOKS
   * LIBFOO_POST_LEGAL_INFO_HOOKS
+  * LIBFOO_TARGET_FINALIZE_HOOKS
 
 These variables are lists of variable names containing actions to be
 performed at this hook point. This allows several hooks to be
@@ -7468,6 +7515,11 @@ Notes
     order, and shall start at 1; It is preferred to pad the number
     with zeros up to 4 digits, like git-format-patch does. E.g.:
     0001-foobar-the-buz.patch
+  * The patch email subject prefix shall not be numbered. Patches
+    shall be generated with the git format-patch -N command, since
+    this numbering is automatically added for series. For example,
+    the patch subject line should look like Subject: [PATCH] foobar
+    the buz rather than Subject: [PATCH n/m] foobar the buz.
   * Previously, it was mandatory for patches to be prefixed with the
     name of the package, like <package>-<number>-<description>.patch,
     but that is no longer the case. Existing packages will be fixed
@@ -7906,6 +7958,10 @@ a patch set. To do so, run:
 $ git fetch --all --tags
 $ git rebase origin/master
 
+Now check the coding style for the changes you committed:
+
+$ utils/docker-run make check-package
+
 Now, you are ready to generate then submit your patch set.
 
 To generate it, run:
@@ -8012,10 +8068,11 @@ editing the commit message. Below the Signed-off-by section, add ---
 and your changelog.
 
 Although the changelog will be visible for the reviewers in the mail
-thread, as well as in patchwork [http://patchwork.buildroot.org], git
-will automatically ignores lines below --- when the patch will be
-merged. This is the intended behavior: the changelog is not meant to
-be preserved forever in the git history of the project.
+thread, as well as in patchwork [https://patchwork.ozlabs.org/project
+/buildroot/list/], git will automatically ignores lines below ---
+when the patch will be merged. This is the intended behavior: the
+changelog is not meant to be preserved forever in the git history of
+the project.
 
 Hereafter the recommended layout:
 
@@ -8058,20 +8115,21 @@ version number):
 $ git format-patch -v4 -M -s -o outgoing origin/master
 
 When you provide a new version of a patch, please mark the old one as
-superseded in patchwork [http://patchwork.buildroot.org]. You need to
-create an account on patchwork [http://patchwork.buildroot.org] to be
-able to modify the status of your patches. Note that you can only
-change the status of patches you submitted yourself, which means the
-email address you register in patchwork [http://
-patchwork.buildroot.org] should match the one you use for sending
-patches to the mailing list.
+superseded in patchwork [https://patchwork.ozlabs.org/project/
+buildroot/list/]. You need to create an account on patchwork [https:/
+/patchwork.ozlabs.org/project/buildroot/list/] to be able to modify
+the status of your patches. Note that you can only change the status
+of patches you submitted yourself, which means the email address you
+register in patchwork [https://patchwork.ozlabs.org/project/buildroot
+/list/] should match the one you use for sending patches to the
+mailing list.
 
 You can also add the --in-reply-to <message-id> option when
 submitting a patch to the mailing list. The id of the mail to reply
-to can be found under the "Message Id" tag on patchwork [http://
-patchwork.buildroot.org]. The advantage of in-reply-to is that
-patchwork will automatically mark the previous version of the patch
-as superseded.
+to can be found under the "Message Id" tag on patchwork [https://
+patchwork.ozlabs.org/project/buildroot/list/]. The advantage of 
+in-reply-to is that patchwork will automatically mark the previous
+version of the patch as superseded.
 
 22.6. Reporting issues/bugs or getting help
 
@@ -8328,9 +8386,9 @@ DEVELOPERS file for various tasks:
     at all files under version control in the Buildroot repository,
     and list the ones that are not handled by any developer. The
     purpose of this option is to help completing the DEVELOPERS file.
-  * When using without any arguments, it validates the integrity of
-    the DEVELOPERS file and will note WARNINGS for items that don’t
-    match.
+  * When using the -v command line option, it validates the integrity
+    of the DEVELOPERS file and will note WARNINGS for items that
+    don’t match.
 
 Chapter 24. Release Engineering
 
@@ -8370,6 +8428,9 @@ Table of Contents
 
 25. Makedev syntax documentation
 26. Makeusers syntax documentation
+
+    26.1. Caveat with automatic UIDs and GIDs
+
 27. Migrating from older Buildroot versions
 
     27.1. General approach
@@ -8551,6 +8612,19 @@ This will create this user:
   * shell is: /bin/sh
   * test is not a member of any additional groups
   * comment is: Test user
+
+26.1. Caveat with automatic UIDs and GIDs
+
+When updating buildroot or when packages are added or removed to/from
+the configuration, it is possible that the automatic UIDs and GIDs
+are changed. This can be a problem if persistent files were created
+with that user or group: after upgrade, they will suddenly have a
+different owner.
+
+Therefore, it is advisable to perpetuate the automatic IDs. This can
+be done by adding a users table with the generated IDs. It is only
+needed to do this for UIDs that actually create persistent files,
+e.g. database.
 
 Chapter 27. Migrating from older Buildroot versions
 
