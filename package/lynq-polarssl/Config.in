@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_POLARSSL
+bool "Polarssl sample."
+help
+  This is a demo to polarssl.

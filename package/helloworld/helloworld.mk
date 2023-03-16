@@ -5,7 +5,7 @@
 ################################################################################
 
 HELLOWORLD_VERSION:= 1.0.0
-HELLOWORLD_SITE:= $(CURDIR)/mobiletek/helloworld
+HELLOWORLD_SITE:= $(CURDIR)/mobiletek/samples/helloworld
 HELLOWORLD_SITE_METHOD:=local
 HELLOWORLD_INSTALL_TARGET:=YES
 

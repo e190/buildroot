@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_ECALL
+bool "Ecall sample."
+help
+  This is a demo to ecall.

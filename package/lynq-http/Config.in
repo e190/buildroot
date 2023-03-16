@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_HTTP
+bool "Http sample."
+help
+  This is a demo to http.

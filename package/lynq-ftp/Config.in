@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_FTP
+bool "Ftp client sample."
+help
+  This is a demo to ftp client.

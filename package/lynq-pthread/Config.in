@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_PTHREAD
+bool "Pthread sample."
+help
+  This is a demo to pthread.

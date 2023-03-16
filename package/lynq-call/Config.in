@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_CALL
+bool "Call sample."
+help
+  This is a demo to call.

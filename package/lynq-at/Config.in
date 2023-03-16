@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_AT
+bool "AT command sample."
+help
+  This is a demo to AT.

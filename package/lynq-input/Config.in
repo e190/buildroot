@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_INPUT
+bool "Input sample."
+help
+  This is a demo to input.

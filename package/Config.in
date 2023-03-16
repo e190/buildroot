@@ -2745,6 +2745,23 @@ endmenu
 
 menu "Mobiletek-added packages"
     source "package/helloworld/Config.in"
+    source "package/lynq-at/Config.in"
+    source "package/lynq-uart/Config.in"
+    source "package/lynq-gnss/Config.in"
+    source "package/lynq-audio/Config.in"
+    source "package/lynq-call/Config.in"
+    source "package/lynq-ecall/Config.in"
+    source "package/lynq-sms/Config.in"
+    source "package/lynq-http/Config.in"
+    source "package/lynq-pthread/Config.in"
+    source "package/lynq-ftp/Config.in"
+    source "package/lynq-coap/Config.in"
+    source "package/lynq-sim/Config.in"
+    source "package/lynq-net-control/Config.in"
+    source "package/lynq-polarssl/Config.in"
+    source "package/lynq-mqtt/Config.in"
+    source "package/lynq-lcd/Config.in"
+    source "package/lynq-input/Config.in"
 endmenu
 
 

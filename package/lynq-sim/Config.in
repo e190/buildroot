@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_SIM
+bool "Sim sample."
+help
+  This is a demo to sim.

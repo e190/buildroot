@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_GNSS
+bool "Gnss sample."
+help
+  This is a demo to gnss.

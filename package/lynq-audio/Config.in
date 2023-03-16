@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_AUDIO
+bool "Audio sample."
+help
+  This is a demo to audio.

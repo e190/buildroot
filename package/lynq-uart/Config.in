@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_UART
+bool "Uart sample."
+help
+  This is a demo to uart.

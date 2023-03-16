@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_NET_CONTROL
+bool "Network control sample."
+help
+  This is a demo to network control.

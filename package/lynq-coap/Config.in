@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_COAP
+bool "Coap sample."
+help
+  This is a demo to coap.

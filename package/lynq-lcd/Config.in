@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LYNQ_LCD
+bool "Lcd sample."
+help
+  This is a demo to lcd.
